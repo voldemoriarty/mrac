@@ -13,6 +13,7 @@ step_time = 0;
 y0 = [0 0];
 
 % define the amplitude of input
+% (the control effort)
 amp = 3 * 10^4;
 
 % define the ode45 solver
