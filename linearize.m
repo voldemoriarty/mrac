@@ -5,6 +5,7 @@ function [alpha, beta, x0] = linearize(y0)
     g = 9.8;
     
     % compute x0 corresponding to the height given
+    % use the nonlinear height to force relation
     x0 = a * ((y0 + b)^4) * m * g;
     
     % now compute alpha and beta, derivation in the 
