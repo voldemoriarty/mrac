@@ -3,7 +3,7 @@ global A B K1 K2 K3 Am Bm alpha P lambda
 
 A   = [0 1;0 0];
 B   = [0; 1];
-K3  = [-7.49 -6.56];
+% K3  = [-7.49 -6.56];
 
 % the reference model spec
 wn = 0.4;
@@ -24,6 +24,42 @@ K2 = B \ Bm;
 % print K1 and K2
 display(K1);
 display(K2);
+
+% calculate K3 using LMIs
+gamma = 1.8;
+k = gamma^2;
+setlmis([])
+
+% define the LMI variables: X & W
+
+% X is symmetric and same size as Am
+X = lmivar(1, [size(Am,1) 1]);
+
+% W is rectangular and size [1 length(Am)]
+W = lmivar(2, [1 length(Am)]);
+
+% the first LMI: X > 0
+lmiterm([-1 1 1 X],1,1);
+
+% the second LMI: [...] < 0
+lmiterm([2 1 1 X], Am, 1, 's');  % Am*X + (Am*X)'
+lmiterm([2 1 1 W], B, 1, 's');   % B*W + (B*W)'
+lmiterm([2 1 2 0], B);           % B
+lmiterm([2 1 3 -X], 1, 1);       % X' = X
+
+lmiterm([2 2 1 0], B');          % B'
+lmiterm([2 2 2 0], -1);          % -I
+lmiterm([2 2 3 0], 0);           % zero
+
+lmiterm([2 3 1 X], 1, 1);        % X
+lmiterm([2 3 2 0], 0);           % 0
+lmiterm([2 3 3 0], -k);        % -k*I
+
+LMIs = getlmis;
+[TMIN, XFEAS] = feasp(LMIs);
+Xs = dec2mat(LMIs, XFEAS, X);
+Ws = dec2mat(LMIs, XFEAS, W);
+K3 = Ws * inv(Xs);
 
 % the disturbance coeffs
 alpha = [0.2314 0.7848 -0.0624 0.0095 0.0215]';
