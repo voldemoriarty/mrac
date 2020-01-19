@@ -1,13 +1,14 @@
-global A B K1 K2 K3 Am Bm alpha P lambda
+global A B K1 K2 K3 Am Bm alpha P lambda f
 
-
+f   = pi/30;
 A   = [0 1;0 0];
 B   = [0; 1];
+lambda = 1000;
+wn = 0.4;
+zt = 0.707;
 % K3  = [-7.49 -6.56];
 
 % the reference model spec
-wn = 0.4;
-zt = 0.707;
 
 Am = [0 1;-(wn^2) -2*wn*zt];
 Bm = [0; wn^2];
@@ -15,7 +16,6 @@ Bm = [0; wn^2];
 % MRAC
 Q = eye(length(A));
 P = lyap(Am',Q);
-lambda = 100;
 
 % calculate K1 and K2 using pole placement
 K1 = place(A, B, eig(Am));
@@ -73,24 +73,37 @@ numStates = length(A) + length(Am) + length(alpha);
 plot(to, rad2deg(xo(:,1)));
 hold on
 plot(to, rad2deg(xo(:,2)));
+plot(to, rad2deg(square(f, to)));
 hold off
 title('Plant Outputs');
-legend('angle', 'speed');
+legend('angle', 'speed', 'input');
+xlabel('Time (s)');
+ylabel('\phi (deg, deg/s)');
 
 figure
 plot(to, rad2deg(xo(:,3)));
 hold on
 plot(to, rad2deg(xo(:,4)));
+plot(to, rad2deg(square(f, to)));
 hold off
 title('Reference Model Outputs');
+legend('angle', 'speed', 'input');
+xlabel('Time (s)');
+ylabel('\phi (deg, deg/s)');
+
+figure
+plot(to, rad2deg(xo(:,1) - xo(:,3)));
+hold on
+plot(to, rad2deg(xo(:,2) - xo(:,4)));
+title('Errors');
 legend('angle', 'speed');
-
-
+xlabel('Time (s)');
+ylabel('\phi (deg, deg/s)');
 
 function dxdt = nextState(t, states) 
-    global A B K1 K2 K3 Am Bm alpha P lambda
+    global A B K1 K2 K3 Am Bm alpha P lambda f
     
-    u       = square(pi/30,t);
+    u       = square(f,t);
     x       = states(1:2);
     xm      = states(3:4);
     theta   = states(5:end);
