@@ -3,8 +3,6 @@ global A B K1 K2 K3 Am Bm alpha P lambda
 
 A   = [0 1;0 0];
 B   = [0; 1];
-K1  = [0.16 0.57];
-K2  = 0.16;
 K3  = [-7.49 -6.56];
 
 % the reference model spec
@@ -15,10 +13,17 @@ Am = [0 1;-(wn^2) -2*wn*zt];
 Bm = [0; wn^2];
 
 % MRAC
-Q = eye(2);
+Q = eye(length(A));
 P = lyap(Am',Q);
 lambda = 100;
 
+% calculate K1 and K2 using pole placement
+K1 = place(A, B, eig(Am));
+K2 = B \ Bm;
+
+% print K1 and K2
+display(K1);
+display(K2);
 
 % the disturbance coeffs
 alpha = [0.2314 0.7848 -0.0624 0.0095 0.0215]';
