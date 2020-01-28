@@ -1,7 +1,9 @@
+global amp
+
 %% define the important values
 f       = 2*pi*1;
 A       = [0 1;0 0];
-B       = [0; 826];
+B       = [0; 1e-2/0.12];
 lambda  = 10;
 amp     = 1;
 
@@ -139,7 +141,7 @@ end
 
 function u = square(f, t)
     global amp
-    u = amp * (double(sin(f*t) >= 0) - 0.5) * 2;
+    u = amp * (double(sin(f*t) >= 0) - 0.5) * 2 + 2;
 end
 
 function T = THETA(x)
